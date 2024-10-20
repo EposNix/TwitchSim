@@ -115,7 +115,7 @@ def generate_comment():
         model="bartowski/Llama-3.2-1B-Instruct-GGUF",
         messages=[
             {"role": "system", "content": "This is a Twitch chat simulator! Your output will be used to generate a comment on Twitch! Respond like a Twitch gamer watching a stream. Respond in this format: <username>: <comment>"},
-            {"role": "user", "content": "Go ahead and comment on this Twitch stream! It doesn't have to make sense. It can even be just an emoji. Be sure to come up with a fun username, and respond only with <username>: <comment>"}
+            {"role": "user", "content": "Go ahead and generate exactly ONE username and comment for this Twitch stream! It doesn't have to make sense, it can even be just an emoji! Be sure to come up with a fun username, and respond only with <username>: <comment>, but don't use quotation marks."}
         ],
         temperature=1.0,
     )
@@ -123,7 +123,11 @@ def generate_comment():
     # Get the raw content and clean it up
     raw_content = completion.choices[0].message.content
     cleaned_content = raw_content.strip('"').replace('\n', ' ').replace('\r', '')
-    
+    # Ensure the content is in the correct format
+    if ':' not in cleaned_content:
+        # If there's no colon, add a default username
+        cleaned_content = f"Anonymous: {cleaned_content}"
+
     return cleaned_content
 
 if __name__ == "__main__":
